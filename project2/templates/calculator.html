@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Calculator</title>
+</head>
+<body>
+  <h2>Calculator</h2>
+  <form id="calcForm">
+    <input type="hidden" name="username" id="username" />
+    <input type="number" name="x" placeholder="Enter first number" required /><br>
+    <input type="number" name="y" placeholder="Enter second number" required /><br>
+    <select name="operation" required>
+      <option value="addition">Addition</option>
+      <option value="subtraction">Subtraction</option>
+      <option value="multiplication">Multiplication</option>
+      <option value="division">Division</option>
+    </select><br>
+    <button type="submit">Calculate</button>
+  </form>
+  <h3 id="result"></h3>
+  <p><a id="historyLink" href="#">View History</a></p>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const username = params.get("username");
+    document.getElementById("username").value = username;
+    document.getElementById("historyLink").href = `history.html?username=${username}`;
+
+    document.getElementById("calcForm").onsubmit = async (e) => {
+      e.preventDefault();
+      const formData = new FormData(e.target);
+      const res = await fetch("/calculator", { method: "POST", body: formData });
+      const data = await res.json();
+      if (data.status === "success") {
+        document.getElementById("result").innerText = "Result: " + data.result;
+      } else {
+        document.getElementById("result").innerText = "Something went wrong.";
+      }
+    };
+  </script>
+</body>
+</html>

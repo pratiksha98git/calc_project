@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>History</title>
+</head>
+<body>
+  <h2>Calculation History</h2>
+  <ul id="historyList"></ul>
+  <button id="clearHistory">Clear History</button>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const username = params.get("username");
+
+    async function loadHistory() {
+      const res = await fetch(`/history/${username}`);
+      const data = await res.json();
+      const list = document.getElementById("historyList");
+      list.innerHTML = "";
+      data.history.forEach(item => {
+        const li = document.createElement("li");
+        li.textContent = `${item.operand1} ${item.operation_type} ${item.operand2} = ${item.result}`;
+        list.appendChild(li);
+      });
+    }
+
+    document.getElementById("clearHistory").onclick = async () => {
+      await fetch(`/clear-history/${username}`, { method: "DELETE" });
+      loadHistory();
+    };
+
+    loadHistory();
+  </script>
+</body>
+</html>
